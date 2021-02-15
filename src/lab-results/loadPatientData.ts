@@ -76,6 +76,46 @@ const exist = (...args: any[]): boolean => {
   return true;
 };
 
+export enum OBSERVATION_INTERPRETATION {
+  'NORMAL',
+
+  'HIGH',
+  'CRITICALLY_HIGH',
+  'OFF_SCALE_HIGH',
+
+  'LOW',
+  'CRITICALLY_LOW',
+  'OFF_SCALE_LOW',
+}
+
+const assessValue = (meta: ObsMetaInfo) => (value: number): OBSERVATION_INTERPRETATION => {
+  if (exist(meta.hiAbsolute) && value > meta.hiAbsolute) {
+    return OBSERVATION_INTERPRETATION.OFF_SCALE_HIGH;
+  }
+
+  if (exist(meta.hiCritical) && value > meta.hiCritical) {
+    return OBSERVATION_INTERPRETATION.CRITICALLY_HIGH;
+  }
+
+  if (exist(meta.hiNormal) && value > meta.hiNormal) {
+    return OBSERVATION_INTERPRETATION.HIGH;
+  }
+
+  if (exist(meta.lowAbsolute) && value < meta.lowAbsolute) {
+    return OBSERVATION_INTERPRETATION.OFF_SCALE_LOW;
+  }
+
+  if (exist(meta.lowCritical) && value < meta.lowCritical) {
+    return OBSERVATION_INTERPRETATION.CRITICALLY_LOW;
+  }
+
+  if (exist(meta.lowNormal) && value < meta.lowNormal) {
+    return OBSERVATION_INTERPRETATION.LOW;
+  }
+
+  return OBSERVATION_INTERPRETATION.NORMAL;
+};
+
 const extractMetaInformation = (concepts: ConceptRecord[]): Record<ConceptUuid, ObsMetaInfo> => {
   return Object.fromEntries(
     concepts.map(
@@ -104,6 +144,8 @@ const extractMetaInformation = (concepts: ConceptRecord[]): Record<ConceptUuid, 
         if (exist(hiNormal, lowNormal)) {
           meta.range = `${lowNormal} – ${hiNormal}`;
         }
+
+        meta.assessValue = assessValue(meta);
 
         return [uuid, meta];
       },

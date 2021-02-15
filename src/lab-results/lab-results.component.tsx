@@ -18,6 +18,9 @@ import {
   Loading,
 } from 'carbon-components-react';
 import usePatientResultsData from './usePatientResultsData';
+import { OBSERVATION_INTERPRETATION } from './loadPatientData';
+
+// OBSERVATION_INTERPRETATION
 
 const testPatient = '8673ee4f-e2ab-4077-ba55-4980f408773e';
 
@@ -51,17 +54,36 @@ const headers = [
 const Main = ({ className = '', ...props }) => <main {...props} className={`omrs-main-content ${className}`} />;
 const Card = ({ ...props }) => <div {...props} className={styles.card} />;
 const InfoButton = () => <Information16 className={styles['info-button']} />;
-// const Input = ({ outlined ,...props }) => <div {...props} className={outlined ? className1 : className2} />;
+const TypedTableRow = ({ interpretation, ...props }: { interpretation: OBSERVATION_INTERPRETATION }) => {
+  switch (interpretation) {
+    case OBSERVATION_INTERPRETATION.OFF_SCALE_HIGH:
+      return <TableRow {...props} className={styles['off-scale-high']} />;
+
+    case OBSERVATION_INTERPRETATION.CRITICALLY_HIGH:
+      return <TableRow {...props} className={styles['critically-high']} />;
+
+    case OBSERVATION_INTERPRETATION.HIGH:
+      return <TableRow {...props} className={styles['high']} />;
+
+    case OBSERVATION_INTERPRETATION.OFF_SCALE_LOW:
+      return <TableRow {...props} className={styles['off-scale-low']} />;
+
+    case OBSERVATION_INTERPRETATION.CRITICALLY_LOW:
+      return <TableRow {...props} className={styles['critically-low']} />;
+
+    case OBSERVATION_INTERPRETATION.LOW:
+      return <TableRow {...props} className={styles['low']} />;
+
+    case OBSERVATION_INTERPRETATION.NORMAL:
+    default:
+      return <TableRow {...props} />;
+      break;
+  }
+};
 
 export const LabResults: React.FC = () => {
-  //   const { search } = useLocation();
   //   const config = useConfig();
-  //   const [location, setLocation] = useState('');
-  //   const [addressTemplate, setAddressTemplate] = useState('');
   //   const [isLoadingPatient, existingPatient, patientUuid, patientErr] = useCurrentPatient();
-  //   const { t } = useTranslation();
-  //   const [sections, setSections] = useState([]);
-  // const { loaded, observations } = usePatientTestObs(testPatient);
   const { sortedObs, loaded, error } = usePatientResultsData(testPatient);
   const [displayData, setDisplayData] = React.useState([]);
 
@@ -79,6 +101,7 @@ export const LabResults: React.FC = () => {
                 id: newestEntry.id,
                 name: panelName,
                 range: newestEntry.meta?.range || '--',
+                interpretation: newestEntry.meta.assessValue(newestEntry.value),
                 value: newestEntry.value,
               },
             ];
@@ -88,6 +111,7 @@ export const LabResults: React.FC = () => {
               key: gm.id,
               name: gm.name,
               range: gm.meta?.range || '--',
+              interpretation: gm.meta.assessValue(gm.value),
               value: gm.value,
             }));
           }
@@ -144,12 +168,12 @@ export const LabResults: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {rows.map(row => (
-                        <TableRow key={row.id} {...getRowProps({ row })}>
+                      {rows.map((row, i) => (
+                        <TypedTableRow key={row.id} interpretation={data[i].interpretation} {...getRowProps({ row })}>
                           {row.cells.map(cell => (
                             <TableCell key={cell.id}>{cell.value}</TableCell>
                           ))}
-                        </TableRow>
+                        </TypedTableRow>
                       ))}
                     </TableBody>
                   </Table>
