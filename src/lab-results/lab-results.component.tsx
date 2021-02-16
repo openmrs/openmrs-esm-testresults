@@ -17,8 +17,8 @@ import {
   TableToolbar,
   Loading,
 } from 'carbon-components-react';
-import usePatientResultsData from './usePatientResultsData';
-import { OBSERVATION_INTERPRETATION } from './loadPatientData';
+import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
+import { OBSERVATION_INTERPRETATION } from '../loadPatientTestData/loadPatientData';
 
 const testPatient = '8673ee4f-e2ab-4077-ba55-4980f408773e';
 
