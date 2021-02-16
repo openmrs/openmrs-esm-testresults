@@ -22,13 +22,13 @@
 	color: #161616;
 	td:nth-child(2) {
 		font-weight: 600;
+		font-family: 'IBM Plex Sans', sans-serif;
 	}
 }
 
 .critically-high,
 .critically-low {
     box-sizing: border-box;
-    // border: 2px solid  #da1e28;
     box-shadow: inset 0 0 0 2px #da1e28;
 
     td {

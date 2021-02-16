@@ -1,6 +1,31 @@
 import { getGlobalStore } from '@openmrs/esm-api';
 
-const cacheStore = getGlobalStore('patientResultsDataCache', []);
+const cacheStore = getGlobalStore<Record<string, [any, number, string]>>('patientResultsDataCache', {});
+
+const addCache = (patientUuid, data, indicator) => {
+  cacheStore.setState({ [patientUuid]: [data, Date.now(), indicator] });
+  const currentStateEntries = Object.entries(cacheStore.getState());
+
+  if (currentStateEntries.length > 3) {
+    currentStateEntries.sort(([, [, dateA]], [, [, dateB]]) => dateB - dateA);
+    cacheStore.setState(Object.fromEntries(currentStateEntries.slice(0, 3)));
+  }
+};
+
+const getLatestUuid = async patientUuid =>
+  (
+    await fetch(
+      '/openmrs/ws/fhir2/R4/Observation?patient=' +
+        patientUuid +
+        '&category=laboratory&_sort=-_date&_summary=data&_format=json&_count=1',
+    ).then(res => res.json())
+  )?.entry?.[0]?.resource?.id;
+
+const getUserDataFromCache = async patientUuid => {
+  const [data, , indicator] = cacheStore.getState()[patientUuid] || [];
+
+  if (!!data && (await getLatestUuid(patientUuid)) === indicator) return data;
+};
 
 const CHUNK_PREFETCH_COUNT = 6;
 
@@ -174,6 +199,11 @@ const parseSingleObsData = ({ testConceptNameMap, memberRefs, metaInfomation }) 
 };
 
 const loadPatientData = async patientUuid => {
+  const cachedPatientData = await getUserDataFromCache(patientUuid);
+  if (cachedPatientData) {
+    return cachedPatientData;
+  }
+
   const entries: ObsRecord[] = await loadObsEntries(patientUuid);
 
   const allConcepts = await loadPresentConcepts(entries);
@@ -230,12 +260,15 @@ const loadPatientData = async patientUuid => {
           {
             entries: val.sort((ent1, ent2) => new Date(ent2.effectiveDateTime) - new Date(ent1.effectiveDateTime)),
             type,
+            uuid,
           },
         ];
       }),
   );
 
-  console.log({ testConcepts, entries, sortedObs, singeEntries, allConcepts });
+  // console.log({ testConcepts, entries, sortedObs, singeEntries, allConcepts });
+
+  addCache(patientUuid, sortedObs, entries[0].id);
 
   return sortedObs;
 };

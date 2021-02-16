@@ -20,8 +20,6 @@ import {
 import usePatientResultsData from './usePatientResultsData';
 import { OBSERVATION_INTERPRETATION } from './loadPatientData';
 
-// OBSERVATION_INTERPRETATION
-
 const testPatient = '8673ee4f-e2ab-4077-ba55-4980f408773e';
 
 function formatDate(date: Date) {
@@ -77,11 +75,18 @@ const TypedTableRow = ({ interpretation, ...props }: { interpretation: OBSERVATI
     case OBSERVATION_INTERPRETATION.NORMAL:
     default:
       return <TableRow {...props} />;
-      break;
   }
 };
 
-export const LabResults: React.FC = () => {
+interface LabResultsProps {
+  openTrendlineView: (uuid: string) => void;
+  openTimelineView: (uuid: string) => void;
+}
+
+export const LabResults: React.FC<LabResultsProps> = ({
+  openTrendlineView = () => {},
+  openTimelineView = () => {},
+}) => {
   //   const config = useConfig();
   //   const [isLoadingPatient, existingPatient, patientUuid, patientErr] = useCurrentPatient();
   const { sortedObs, loaded, error } = usePatientResultsData(testPatient);
@@ -90,7 +95,7 @@ export const LabResults: React.FC = () => {
   React.useEffect(() => {
     setDisplayData(
       Object.entries(sortedObs)
-        .map(([panelName, { entries, type }]) => {
+        .map(([panelName, { entries, type, uuid }]) => {
           const newestEntry = entries[0];
 
           let data;
@@ -116,7 +121,7 @@ export const LabResults: React.FC = () => {
             }));
           }
 
-          return [panelName, type, data, new Date(newestEntry.effectiveDateTime)];
+          return [panelName, type, data, new Date(newestEntry.effectiveDateTime), uuid];
         })
         .sort(([, , , date1], [, , , date2]) => date2 - date1),
     );
@@ -127,7 +132,7 @@ export const LabResults: React.FC = () => {
   return (
     <Main>
       {loaded ? (
-        displayData.map(([title, type, data, date]) => (
+        displayData.map(([title, type, data, date, uuid]) => (
           <Card>
             <DataTable rows={data} headers={headers}>
               {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getTableContainerProps }) => (
@@ -143,20 +148,20 @@ export const LabResults: React.FC = () => {
                   <TableToolbar>
                     <TableToolbarContent>
                       {type === 'Test' && (
-                        <Button kind="ghost" renderIcon={ChartLine16} onClick={() => console.log('click')}>
+                        <Button kind="ghost" renderIcon={ChartLine16} onClick={() => openTrendlineView(uuid)}>
                           Trend
                         </Button>
                       )}
-                      <Button kind="ghost" renderIcon={Table16} onClick={() => console.log('click')}>
+                      <Button kind="ghost" renderIcon={Table16} onClick={() => openTimelineView(uuid)}>
                         Timeline
                       </Button>
                     </TableToolbarContent>
                   </TableToolbar>
                   <Table {...getTableProps()} isSortable>
                     <colgroup>
-                      <col span="1" style={{ width: '33.3%' }} />
-                      <col span="1" style={{ width: '33.3%' }} />
-                      <col span="1" style={{ width: '33.3%' }} />
+                      <col span="1" style={{ width: '33%' }} />
+                      <col span="1" style={{ width: '33%' }} />
+                      <col span="1" style={{ width: '34%' }} />
                     </colgroup>
                     <TableHead>
                       <TableRow>
