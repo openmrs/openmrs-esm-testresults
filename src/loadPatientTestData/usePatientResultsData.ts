@@ -1,9 +1,9 @@
 import React from 'react';
 
-import loadPatientData from './loadPatientData';
+import loadPatientData, { PatientData } from './loadPatientData';
 
 type LoadingState = {
-  sortedObs: Record<string, any>;
+  sortedObs: PatientData;
   loaded: boolean;
   error: Object | undefined;
 };

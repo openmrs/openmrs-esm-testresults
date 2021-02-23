@@ -19,6 +19,7 @@ import {
 } from 'carbon-components-react';
 import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
 import { OBSERVATION_INTERPRETATION } from '../loadPatientTestData/loadPatientData';
+import { useParams, useHistory } from 'react-router';
 
 const testPatient = '8673ee4f-e2ab-4077-ba55-4980f408773e';
 
@@ -52,6 +53,7 @@ const headers = [
 const Main = ({ className = '', ...props }) => <main {...props} className={`omrs-main-content ${className}`} />;
 const Card = ({ ...props }) => <div {...props} className={styles.card} />;
 const InfoButton = () => <Information16 className={styles['info-button']} />;
+
 const TypedTableRow = ({ interpretation, ...props }: { interpretation: OBSERVATION_INTERPRETATION }) => {
   switch (interpretation) {
     case OBSERVATION_INTERPRETATION.OFF_SCALE_HIGH:
@@ -87,9 +89,14 @@ export const LabResults: React.FC<LabResultsProps> = ({
   openTrendlineView = () => {},
   openTimelineView = () => {},
 }) => {
+  const { patientUuid = testPatient } = useParams<{ patientUuid: string }>();
+  const history = useHistory();
+
+  console.log({ patientUuid });
+
   //   const config = useConfig();
   //   const [isLoadingPatient, existingPatient, patientUuid, patientErr] = useCurrentPatient();
-  const { sortedObs, loaded, error } = usePatientResultsData(testPatient);
+  const { sortedObs, loaded, error } = usePatientResultsData(patientUuid);
   const [displayData, setDisplayData] = React.useState([]);
 
   React.useEffect(() => {
@@ -148,20 +155,26 @@ export const LabResults: React.FC<LabResultsProps> = ({
                   <TableToolbar>
                     <TableToolbarContent>
                       {type === 'Test' && (
-                        <Button kind="ghost" renderIcon={ChartLine16} onClick={() => openTrendlineView(uuid)}>
+                        <Button
+                          kind="ghost"
+                          renderIcon={ChartLine16}
+                          onClick={() => history.push(`/lab-results/${patientUuid}/trendline/${uuid}`)}>
                           Trend
                         </Button>
                       )}
-                      <Button kind="ghost" renderIcon={Table16} onClick={() => openTimelineView(uuid)}>
+                      <Button
+                        kind="ghost"
+                        renderIcon={Table16}
+                        onClick={() => history.push(`/lab-results/${patientUuid}/timeline/${uuid}`)}>
                         Timeline
                       </Button>
                     </TableToolbarContent>
                   </TableToolbar>
                   <Table {...getTableProps()} isSortable>
                     <colgroup>
-                      <col span="1" style={{ width: '33%' }} />
-                      <col span="1" style={{ width: '33%' }} />
-                      <col span="1" style={{ width: '34%' }} />
+                      <col span={1} style={{ width: '33%' }} />
+                      <col span={1} style={{ width: '33%' }} />
+                      <col span={1} style={{ width: '34%' }} />
                     </colgroup>
                     <TableHead>
                       <TableRow>

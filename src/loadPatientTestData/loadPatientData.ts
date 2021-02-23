@@ -1,8 +1,8 @@
 import { getGlobalStore } from '@openmrs/esm-api';
 
-const cacheStore = getGlobalStore<Record<string, [any, number, string]>>('patientResultsDataCache', {});
+const cacheStore = getGlobalStore<Record<string, [PatientData, number, string]>>('patientResultsDataCache', {});
 
-const addCache = (patientUuid, data, indicator) => {
+const addCache = (patientUuid, data: PatientData, indicator) => {
   cacheStore.setState({ [patientUuid]: [data, Date.now(), indicator] });
   const currentStateEntries = Object.entries(cacheStore.getState());
 
@@ -12,7 +12,7 @@ const addCache = (patientUuid, data, indicator) => {
   }
 };
 
-const getLatestUuid = async patientUuid =>
+const getLatestObsUuid = async patientUuid =>
   (
     await fetch(
       '/openmrs/ws/fhir2/R4/Observation?patient=' +
@@ -21,10 +21,10 @@ const getLatestUuid = async patientUuid =>
     ).then(res => res.json())
   )?.entry?.[0]?.resource?.id;
 
-const getUserDataFromCache = async patientUuid => {
+const getUserDataFromCache = async (patientUuid: string): Promise<PatientData | undefined> => {
   const [data, , indicator] = cacheStore.getState()[patientUuid] || [];
 
-  if (!!data && (await getLatestUuid(patientUuid)) === indicator) return data;
+  if (!!data && (await getLatestObsUuid(patientUuid)) === indicator) return data;
 };
 
 const CHUNK_PREFETCH_COUNT = 6;
@@ -32,10 +32,11 @@ const CHUNK_PREFETCH_COUNT = 6;
 type ConceptUuid = string;
 type ObsUuid = string;
 
-interface ObsRecord {
+export interface ObsRecord {
   members?: ObsRecord[];
   conceptClass: ConceptUuid;
   meta?: ObsMetaInfo;
+  effectiveDateTime: string;
   [_: string]: any;
 }
 
@@ -46,6 +47,10 @@ interface ObsMetaInfo {
 interface ConceptRecord {
   uuid: ConceptUuid;
   [_: string]: any;
+}
+
+export interface PatientData {
+  [_: string]: { entries: ObsRecord[]; type: string; uuid: string };
 }
 
 const loadObsEntries = async (patientUuid: string): Promise<ObsRecord[]> => {
@@ -84,13 +89,18 @@ const loadObsEntries = async (patientUuid: string): Promise<ObsRecord[]> => {
 
 const getEntryConceptClassUuid = entry => entry.code.coding[0].code;
 
+const conceptCache: Record<ConceptUuid, Promise<ConceptRecord>> = {};
 /**
  * fetch all concepts for all given observation entries
  */
-const loadPresentConcepts = (entries: ObsRecord[]): Promise<ConceptRecord[]> =>
+export const loadPresentConcepts = (entries: ObsRecord[]): Promise<ConceptRecord[]> =>
   Promise.all(
-    [...new Set(entries.map(getEntryConceptClassUuid))].map(x =>
-      fetch('/openmrs/ws/rest/v1/concept/' + x + '?v=full').then(res => res.json()),
+    [...new Set(entries.map(getEntryConceptClassUuid))].map(
+      conceptUuid =>
+        conceptCache[conceptUuid] ||
+        (conceptCache[conceptUuid] = fetch('/openmrs/ws/rest/v1/concept/' + conceptUuid + '?v=full').then(res =>
+          res.json(),
+        )),
     ),
   );
 
@@ -198,7 +208,7 @@ const parseSingleObsData = ({ testConceptNameMap, memberRefs, metaInfomation }) 
   entry.name = testConceptNameMap[entry.conceptClass];
 };
 
-const loadPatientData = async patientUuid => {
+const loadPatientData = async (patientUuid: string): Promise<PatientData> => {
   const cachedPatientData = await getUserDataFromCache(patientUuid);
   if (cachedPatientData) {
     return cachedPatientData;
@@ -245,7 +255,7 @@ const loadPatientData = async patientUuid => {
     }
   });
 
-  const sortedObs: Record<string, { entries: ObsRecord[]; type: string }> = Object.fromEntries(
+  const sortedObs: PatientData = Object.fromEntries(
     Object.entries(obsByClass)
       // remove concepts that did not have any observations
       .filter(x => x[1].length)
@@ -258,7 +268,7 @@ const loadPatientData = async patientUuid => {
         return [
           display,
           {
-            entries: val.sort((ent1, ent2) => new Date(ent2.effectiveDateTime) - new Date(ent1.effectiveDateTime)),
+            entries: val.sort((ent1, ent2) => Date.parse(ent2.effectiveDateTime) - Date.parse(ent1.effectiveDateTime)),
             type,
             uuid,
           },
@@ -266,7 +276,7 @@ const loadPatientData = async patientUuid => {
       }),
   );
 
-  // console.log({ testConcepts, entries, sortedObs, singeEntries, allConcepts });
+  console.log({ testConcepts, entries, sortedObs, singeEntries, allConcepts });
 
   addCache(patientUuid, sortedObs, entries[0].id);
 
