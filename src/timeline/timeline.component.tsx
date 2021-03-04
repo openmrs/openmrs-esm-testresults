@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import styles from './timeline.scss';
 import { useTimelineData } from './useTimelineData';
 
-const Grid = ({ dataColumns, ...props }) => (
+const Grid = ({ dataColumns, style = {}, ...props }) => (
   <div
     style={{
-      gridTemplateColumns: `9em repeat(${dataColumns}, 5em)`,
+      ...style,
+      gridTemplateColumns: `repeat(${dataColumns}, 5em)`,
     }}
     className={styles['grid']}
     {...props}
@@ -19,7 +20,8 @@ const NameColumnGrid = props => (
     style={{
       gridTemplateColumns: '9em',
       width: '9em',
-      position: 'absolute',
+      position: 'sticky',
+      left: '0px',
     }}
     className={styles['grid']}
     {...props}
@@ -72,60 +74,66 @@ const Table = () => {
     );
 
   return (
-    <Main>
-      <Link to={`/lab-results/${patientUuid}`}>to overview</Link>
-      <PaddingContainer>
-        <OverflowContainer>
-          <Grid dataColumns={timeColumns.length} padding>
-            <TimeSlots style={{ gridRow: 'span 3' }}>{panelName}</TimeSlots>
-            {yearColumns.map(({ year, size }) => {
-              return (
-                <TimeSlots key={year} style={{ gridColumn: `${size} span` }}>
-                  {year}
-                </TimeSlots>
-              );
-            })}
-            {dayColumns.map(({ day, size }) => {
-              return (
-                <TimeSlots key={day} style={{ gridColumn: `${size} span` }}>
-                  {day}
-                </TimeSlots>
-              );
-            })}
-            {timeColumns.map((time, i) => {
-              return (
-                <TimeSlots key={time + i} style={{ scrollSnapAlign: 'start' }}>
-                  {time}
-                </TimeSlots>
-              );
-            })}
-            {Object.entries(rowData).map(([title, obs]) => {
-              const {
-                meta: { unit = '', range = '' },
-              } = obs.find(x => !!x);
-              return (
-                <>
-                  <RowStartCell {...{ unit, range, title }} />
-                  {sortedTimes.map((_, i) => (
-                    <TimelineCell text={obs[i]?.value || '--'} />
-                  ))}
-                </>
-              );
-            })}
-          </Grid>
-        </OverflowContainer>
-        {/* <NameColumnGrid>
-          <TimeSlots style={{ gridRow: 'span 3' }}>{panelName}</TimeSlots>
-
-          {Object.entries(rowData).map(([title, obs]) => {
-            const {
-              meta: { unit = '', range = '' },
-            } = obs.find(x => !!x);
-            return <RowStartCell {...{ unit, range, title }} />;
-          })}
-        </NameColumnGrid> */}
-      </PaddingContainer>
-    </Main>
+    // <Main className={styles['padded-main']}>
+    // {/* <Link to={`/lab-results/${patientUuid}`}>to overview</Link> */}
+    <PaddingContainer>
+      {/* <OverflowContainer> */}
+      <TimeSlots style={{ gridRow: 'span 1', position: 'sticky', left: '0px', top: '-32px', zIndex: 3 }}>
+        {panelName}
+      </TimeSlots>
+      <Grid
+        dataColumns={timeColumns.length}
+        padding
+        style={{ gridTemplateRows: 'repeat(3, 24px)', position: 'sticky', top: '-32px', zIndex: 2 }}>
+        {/* <TimeSlots style={{ gridRow: 'span 3' }}>{panelName}</TimeSlots> */}
+        {yearColumns.map(({ year, size }) => {
+          return (
+            <TimeSlots key={year} style={{ gridColumn: `${size} span` }}>
+              {year}
+            </TimeSlots>
+          );
+        })}
+        {dayColumns.map(({ day, size }) => {
+          return (
+            <TimeSlots key={day} style={{ gridColumn: `${size} span` }}>
+              {day}
+            </TimeSlots>
+          );
+        })}
+        {timeColumns.map((time, i) => {
+          return (
+            <TimeSlots key={time + i} style={{ scrollSnapAlign: 'start', fontWeight: '400' }}>
+              {time}
+            </TimeSlots>
+          );
+        })}
+      </Grid>
+      <NameColumnGrid>
+        {Object.entries(rowData).map(([title, obs]) => {
+          const {
+            meta: { unit = '', range = '' },
+          } = obs.find(x => !!x);
+          return <RowStartCell {...{ unit, range, title }} />;
+        })}
+      </NameColumnGrid>
+      <Grid dataColumns={timeColumns.length} padding>
+        {Object.entries(rowData).map(([title, obs]) => {
+          const {
+            meta: { unit = '', range = '' },
+          } = obs.find(x => !!x);
+          return (
+            <>
+              {/* <RowStartCell {...{ unit, range, title }} /> */}
+              {sortedTimes.map((_, i) => (
+                <TimelineCell text={obs[i]?.value || '--'} />
+              ))}
+            </>
+          );
+        })}
+      </Grid>
+      {/* </OverflowContainer> */}
+    </PaddingContainer>
+    // </Main>
   );
 };
 

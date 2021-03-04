@@ -136,6 +136,8 @@ export const LabResults: React.FC<LabResultsProps> = ({
 
   console.log({ displayData, sortedObs });
 
+  const OpenMrsTable = ({ title, toolbarButtons, data, columns, paggination, pageSize = 5 }) => {};
+
   return (
     <Main>
       {loaded ? (
