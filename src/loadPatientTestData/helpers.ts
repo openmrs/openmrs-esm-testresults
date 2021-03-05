@@ -6,6 +6,8 @@ const retrieveFromIterator = <T>(iteratorOrIterable: IterableIterator<T>, length
   return Array.from({ length }, () => iterator.next().value);
 };
 
+const pageSize = 100;
+
 const cacheStore = getGlobalStore<Record<string, [PatientData, number, string]>>('patientResultsDataCache', {});
 
 /**
@@ -65,7 +67,7 @@ function* fhirObservationRequests(queries: Record<string, string>) {
       .map(([q, v]) => q + '=' + v)
       .join('&');
 
-  const pathWithPageOffset = offset => path + '?_getpagesoffset=' + offset * 100;
+  const pathWithPageOffset = offset => path + '&_getpagesoffset=' + offset * pageSize;
   let offsetCounter = 0;
   while (true) {
     yield fetch(pathWithPageOffset(offsetCounter++)).then(res => res.json());
@@ -86,19 +88,21 @@ export const loadObsEntries = async (patientUuid: string): Promise<ObsRecord[]> 
     _sort: '-_date',
     _summary: 'data',
     _format: 'json',
-    _count: '100',
+    _count: '' + pageSize,
   });
 
   let responses = await Promise.all(retrieveFromIterator(requests, CHUNK_PREFETCH_COUNT));
 
   const total = responses[0].total;
 
-  if (total > CHUNK_PREFETCH_COUNT * 100) {
-    const missingRequestsCount = Math.ceil(total / 100) - CHUNK_PREFETCH_COUNT;
+  if (total > CHUNK_PREFETCH_COUNT * pageSize) {
+    const missingRequestsCount = Math.ceil(total / pageSize) - CHUNK_PREFETCH_COUNT;
     responses = [...responses, ...(await Promise.all(retrieveFromIterator(requests, missingRequestsCount)))];
   }
 
-  return responses.slice(0, Math.ceil(total / 100)).flatMap(res => res.entry.map(e => e.resource));
+  console.log({ responses });
+
+  return responses.slice(0, Math.ceil(total / pageSize)).flatMap(res => res.entry.map(e => e.resource));
 };
 
 export const getEntryConceptClassUuid = entry => entry.code.coding[0].code;

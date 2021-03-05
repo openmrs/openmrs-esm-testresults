@@ -99,6 +99,8 @@ const loadPatientData = async (patientUuid: string): Promise<PatientData> => {
       }),
   );
 
+  console.log({ sortedObs, obsByClass, entries, allConcepts, testConcepts });
+
   addUserDataToCache(patientUuid, sortedObs, entries[0].id);
 
   return sortedObs;
