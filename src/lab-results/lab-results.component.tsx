@@ -18,7 +18,7 @@ import {
   Loading,
 } from 'carbon-components-react';
 import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
-import { OBSERVATION_INTERPRETATION } from '../loadPatientTestData/loadPatientData';
+import { OBSERVATION_INTERPRETATION } from '../loadPatientTestData/helpers';
 import { useParams, useHistory } from 'react-router';
 
 const testPatient = '8673ee4f-e2ab-4077-ba55-4980f408773e';
@@ -54,7 +54,7 @@ const Main = ({ className = '', ...props }) => <main {...props} className={`omrs
 const Card = ({ ...props }) => <div {...props} className={styles.card} />;
 const InfoButton = () => <Information16 className={styles['info-button']} />;
 
-const TypedTableRow = ({ interpretation, ...props }: { interpretation: OBSERVATION_INTERPRETATION }) => {
+const TypedTableRow: React.FC<{ interpretation: OBSERVATION_INTERPRETATION }> = ({ interpretation, ...props }) => {
   switch (interpretation) {
     case OBSERVATION_INTERPRETATION.OFF_SCALE_HIGH:
       return <TableRow {...props} className={styles['off-scale-high']} />;
@@ -92,9 +92,6 @@ export const LabResults: React.FC<LabResultsProps> = ({
   const { patientUuid = testPatient } = useParams<{ patientUuid: string }>();
   const history = useHistory();
 
-  console.log({ patientUuid });
-
-  //   const config = useConfig();
   //   const [isLoadingPatient, existingPatient, patientUuid, patientErr] = useCurrentPatient();
   const { sortedObs, loaded, error } = usePatientResultsData(patientUuid);
   const [displayData, setDisplayData] = React.useState([]);

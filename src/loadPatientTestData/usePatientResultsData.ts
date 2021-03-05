@@ -1,6 +1,7 @@
 import React from 'react';
 
-import loadPatientData, { PatientData } from './loadPatientData';
+import loadPatientData from './loadPatientData';
+import { PatientData } from './types';
 
 type LoadingState = {
   sortedObs: PatientData;
@@ -9,7 +10,11 @@ type LoadingState = {
 };
 
 const usePatientResultsData = (patientUuid: string): LoadingState => {
-  const [state, setState] = React.useState<LoadingState>({ sortedObs: {}, loaded: false, error: undefined });
+  const [state, setState] = React.useState<LoadingState>({
+    sortedObs: {},
+    loaded: false,
+    error: undefined,
+  });
 
   React.useEffect(() => {
     loadPatientData(patientUuid)

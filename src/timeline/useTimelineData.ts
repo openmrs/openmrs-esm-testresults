@@ -53,6 +53,8 @@ export const useTimelineData = (patientUuid: string, panelUuid: string) => {
   const timelineData = useMemo(() => {
     if (!sortedObs || !loaded || !!error) return { data: { parsedTime: {} }, loaded, error };
 
+    console.log('running inside memo');
+
     const [panelName, panelData] = Object.entries(sortedObs).find(([, { uuid }]) => uuid === panelUuid) || [];
     if (!panelData) return { data: { parsedTime: {} }, loaded, error: new Error('panel data missing') };
 

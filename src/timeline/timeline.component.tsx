@@ -2,34 +2,23 @@ import * as React from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import styles from './timeline.scss';
+import useScrollIndicator from './useScroll';
 import { useTimelineData } from './useTimelineData';
 
-const Grid = ({ dataColumns, style = {}, ...props }) => (
+const Grid = ({ dataColumns, style = {}, padding = false, ...props }) => (
   <div
     style={{
       ...style,
-      gridTemplateColumns: `repeat(${dataColumns}, 5em)`,
+      gridTemplateColumns: `${padding ? '9em ' : ''} repeat(${dataColumns}, 5em)`,
     }}
     className={styles['grid']}
     {...props}
   />
 );
 
-const NameColumnGrid = props => (
-  <div
-    style={{
-      gridTemplateColumns: '9em',
-      width: '9em',
-      position: 'sticky',
-      left: '0px',
-    }}
-    className={styles['grid']}
-    {...props}
-  />
-);
-
-const OverflowContainer = props => <div className={styles['overflow-container']} {...props} />;
-const PaddingContainer = props => <div className={styles['padding-container']} {...props} />;
+const PaddingContainer = React.forwardRef((props, ref) => (
+  <div ref={ref} className={styles['padding-container']} {...props} />
+));
 const TimeSlotsInner = props => <div className={styles['time-slot-inner']} {...props} />;
 const Main = ({ className = '', ...props }) => <main {...props} className={`omrs-main-content ${className}`} />;
 const TimelineCell = ({ text }) => (
@@ -38,8 +27,10 @@ const TimelineCell = ({ text }) => (
   </div>
 );
 
-const RowStartCell = ({ title, range, unit }) => (
-  <div className={styles['timeline-cell']}>
+const RowStartCell = ({ title, range, unit, shadow = false }) => (
+  <div
+    className={styles['timeline-cell']}
+    style={{ position: 'sticky', left: '0px', boxShadow: shadow ? '5px 0 5px 0 rgb(0 0 0 / 11%)' : undefined }}>
     <p>
       {title}
       <br></br>
@@ -56,7 +47,8 @@ const TimeSlots = ({ children = undefined, style }) => (
 
 const Table = () => {
   let { patientUuid, panelUuid } = useParams<{ patientUuid: string; panelUuid: string }>();
-  // const { data, loaded, error } = useTimelineData(patientUuid, panelUuid);
+  const [xIsScrolled, yIsScrolled, containerRef] = useScrollIndicator(0, 32);
+
   const {
     data: {
       parsedTime: { yearColumns, dayColumns, timeColumns, sortedTimes },
@@ -74,18 +66,26 @@ const Table = () => {
     );
 
   return (
-    // <Main className={styles['padded-main']}>
-    // {/* <Link to={`/lab-results/${patientUuid}`}>to overview</Link> */}
-    <PaddingContainer>
-      {/* <OverflowContainer> */}
-      <TimeSlots style={{ gridRow: 'span 1', position: 'sticky', left: '0px', top: '-32px', zIndex: 3 }}>
+    <PaddingContainer ref={containerRef}>
+      <TimeSlots
+        style={{
+          gridRow: 'span 1',
+          position: 'sticky',
+          left: '0px',
+          top: '-32px',
+          zIndex: 3,
+        }}>
         {panelName}
       </TimeSlots>
       <Grid
         dataColumns={timeColumns.length}
-        padding
-        style={{ gridTemplateRows: 'repeat(3, 24px)', position: 'sticky', top: '-32px', zIndex: 2 }}>
-        {/* <TimeSlots style={{ gridRow: 'span 3' }}>{panelName}</TimeSlots> */}
+        style={{
+          gridTemplateRows: 'repeat(3, 24px)',
+          position: 'sticky',
+          top: '-32px',
+          zIndex: 2,
+          boxShadow: yIsScrolled ? '5px 0 5px 0 rgb(0 0 0 / 11%)' : undefined,
+        }}>
         {yearColumns.map(({ year, size }) => {
           return (
             <TimeSlots key={year} style={{ gridColumn: `${size} span` }}>
@@ -108,22 +108,14 @@ const Table = () => {
           );
         })}
       </Grid>
-      <NameColumnGrid>
-        {Object.entries(rowData).map(([title, obs]) => {
-          const {
-            meta: { unit = '', range = '' },
-          } = obs.find(x => !!x);
-          return <RowStartCell {...{ unit, range, title }} />;
-        })}
-      </NameColumnGrid>
-      <Grid dataColumns={timeColumns.length} padding>
+      <Grid dataColumns={timeColumns.length} padding style={{ gridColumn: 'span 2' }}>
         {Object.entries(rowData).map(([title, obs]) => {
           const {
             meta: { unit = '', range = '' },
           } = obs.find(x => !!x);
           return (
             <>
-              {/* <RowStartCell {...{ unit, range, title }} /> */}
+              <RowStartCell {...{ unit, range, title, shadow: xIsScrolled }} />
               {sortedTimes.map((_, i) => (
                 <TimelineCell text={obs[i]?.value || '--'} />
               ))}
@@ -131,10 +123,8 @@ const Table = () => {
           );
         })}
       </Grid>
-      {/* </OverflowContainer> */}
     </PaddingContainer>
-    // </Main>
   );
 };
 
-export default React.memo(Table);
+export default Table;
