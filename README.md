@@ -1,4 +1,4 @@
-![Node.js CI](https://github.com/openmrs/openmrs-esm-lab-results/workflows/Node.js%20CI/badge.svg)
+[![Node.js CI](https://github.com/openmrs/openmrs-esm-testresults/actions/workflows/node.js.yml/badge.svg)](https://github.com/openmrs/openmrs-esm-testresults/actions/workflows/node.js.yml)
 
 # Patient Registration ESM
 
