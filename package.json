@@ -1,13 +1,14 @@
 {
-  "name": "@openmrs/esm-lab-results-app",
+  "name": "@openmrs/esm-testresults-app",
   "version": "0.1.0",
-  "description": "Lab results microfrontend for the OpenMRS SPA",
-  "main": "dist/openmrs-esm-lab-results-app.js",
+  "description": "Workshop code for the OpenMRS SPA",
+  "main": "dist/openmrs-esm-testresults-app.js",
   "types": "src/index.ts",
   "license": "MPL-2.0",
   "homepage": "https://github.com/openmrs/openmrs-esm-lab-results#readme",
   "scripts": {
     "start": "openmrs debug --run-project",
+    "start:large": "NODE_OPTIONS=--max_old_space_size=4096 npm start",
     "serve": "webpack-dev-server",
     "debug": "npm run serve",
     "build": "webpack --mode production",
