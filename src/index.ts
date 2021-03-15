@@ -12,10 +12,19 @@ function setupOpenMRS() {
   };
 
   return {
-    // lifecycle: getAsyncLifecycle(() => import('./playground'), options),
-    // activate: 'playground',
+    lifecycle: getAsyncLifecycle(() => import('./playground'), options),
+    activate: 'playground',
     extensions: [
-      //TODO work here
+      {
+        id: 'playground-nav-link',
+        slot: 'nav-menu',
+        load: getAsyncLifecycle(() => import('./link'), options),
+      },
+      {
+        id: 'playground-home-button',
+        slot: 'home-page-buttons',
+        load: getAsyncLifecycle(() => import('./home'), options),
+      },
     ],
   };
 }
