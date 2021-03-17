@@ -1165,7 +1165,7 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@openmrs/esm-api@^3.1.6", "@openmrs/esm-api@^3.1.9":
+"@openmrs/esm-api@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-api/-/esm-api-3.1.9.tgz#23e2bcde78f81838ece8d8d4719abc7d71fef760"
   integrity sha512-5IxfykAhL9yzxSSb+Ocd75UkIXFmrQ3b2D127Sy2Ftkyoy/160Yd1DbaGf3q03KUTQbd/UiW9Tu6/U7UOb5sIg==
@@ -1201,7 +1201,7 @@
     single-spa "^4.4.1"
     systemjs "^6.3.3"
 
-"@openmrs/esm-config@^3.1.6", "@openmrs/esm-config@^3.1.9":
+"@openmrs/esm-config@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-config/-/esm-config-3.1.9.tgz#94947add41e29e11d0eaf584e683e7cd187fa324"
   integrity sha512-/PrHy8dOdJAuaXahPCgmTmcUymPF3ORDx/Eij+uLVwLoCC6g9cAXaRAGnjjv7+caTCfeOT+4Dko938S1SvtQHw==
@@ -1209,14 +1209,14 @@
     ramda "^0.26.1"
     systemjs-webpack-interop "^2.1.2"
 
-"@openmrs/esm-error-handling@^3.1.6", "@openmrs/esm-error-handling@^3.1.9":
+"@openmrs/esm-error-handling@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-error-handling/-/esm-error-handling-3.1.9.tgz#1c8e700044033969cefc34c2c70917a498eab60d"
   integrity sha512-ZoaEAZye3XB/ywHW6VUnA/0tRWxj37MZ8+gXUl1gFPElGn5nnlYLu/+mJWCU9oStCq+JSXlg8pk7Hf35eP8lZA==
   dependencies:
     systemjs-webpack-interop "^2.1.2"
 
-"@openmrs/esm-extensions@^3.1.6", "@openmrs/esm-extensions@^3.1.9":
+"@openmrs/esm-extensions@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-extensions/-/esm-extensions-3.1.9.tgz#11d8ddce9874eb040648828ca1854ff4bb0e373d"
   integrity sha512-EYuJAr+xdyOfyqSmwsIcdKkHDzqWy8Fqi0ijyBvsyW+BoWvSLWoI71E/JQnSNeG6TTP/sX8RA+WJ7i8IR2b4FQ==
@@ -1224,7 +1224,7 @@
     path-to-regexp "6.1.0"
     systemjs-webpack-interop "^2.1.2"
 
-"@openmrs/esm-react-utils@^3.1.6", "@openmrs/esm-react-utils@^3.1.9":
+"@openmrs/esm-react-utils@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-react-utils/-/esm-react-utils-3.1.9.tgz#290d1f0ced125fcb444b08694bc90132d57901c2"
   integrity sha512-HqfgPlvge4Do6DVfvFAWT8i6D6hkCeqQQhxU5MrpFe1a4le9pedektkjRDvKreJx9UVGVPTSKnNjFbKxoJzmdg==
@@ -1232,7 +1232,7 @@
     single-spa-react "^2.13.0"
     systemjs-webpack-interop "^2.1.2"
 
-"@openmrs/esm-styleguide@^3.1.6", "@openmrs/esm-styleguide@^3.1.9":
+"@openmrs/esm-styleguide@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@openmrs/esm-styleguide/-/esm-styleguide-3.1.9.tgz#06f0217dc4a64d7889b007f003601c0913fb34bd"
   integrity sha512-UY9E7ij0brxnw40tCvkGB7fb71Mp672ypIWjcFAqaLzpwF2kSc1tpAIhoL5WxUE6SuclwyGDXL33RK9FmE/vIA==
