@@ -40,7 +40,10 @@
     "url": "https://github.com/openmrs/openmrs-esm-lab-results/issues"
   },
   "dependencies": {
-    "carbon-components-react": "^7.23.2"
+    "carbon-components-react": "^7.23.2",
+    "d3": "5.12.0",
+    "@carbon/charts-react": "0.34.11",
+    "@carbon/charts": "0.34.11"
   },
   "peerDependencies": {
     "@openmrs/esm-api": "3.x",
