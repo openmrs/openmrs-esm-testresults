@@ -64,7 +64,7 @@ const Trendline = () => {
     const tableData = [];
 
     const DateFormatOption: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    const TableDateFormatOption: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    const TableDateFormatOption: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
     const TableTimeFormatOption: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
 
     // console.log(patientData)
@@ -78,8 +78,8 @@ const Trendline = () => {
       });
 
       tableData.push({
-        date: new Date(Date.parse(entry.effectiveDateTime)).toLocaleDateString('en-GB', TableDateFormatOption),
-        time: new Date(Date.parse(entry.effectiveDateTime)).toLocaleTimeString('en-GB', TableTimeFormatOption),
+        date: new Date(Date.parse(entry.effectiveDateTime)).toLocaleDateString('en-US', TableDateFormatOption),
+        time: new Date(Date.parse(entry.effectiveDateTime)).toLocaleTimeString('en-US', TableTimeFormatOption),
         value: entry.value,
         id: entry.id,
       });
