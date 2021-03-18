@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
 import styles from './trendline.scss';
@@ -49,6 +49,8 @@ const Trendline = () => {
     const data = [];
 
     const DateFormatOption: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    const history = useHistory();
+
 
     // console.log(patientData)
     let dataset = patientData[0];
