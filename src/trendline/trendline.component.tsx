@@ -11,6 +11,21 @@ const useTrendlineData = () => {
     testUuid: string;
   }>();
   const { sortedObs, loaded, error } = usePatientResultsData(patientUuid);
+
+  if (loaded && !error) {
+    if (panelUuid) {
+      // return Object.entries(sortedObs[panelUuid]).find(([panelName, { entries, type, uuid }]) => {
+      // return uuid == testUuid;
+      // });
+      return null;
+    }
+
+    return Object.entries(sortedObs).find(([panelName, { entries, type, uuid }]) => {
+      return uuid == testUuid;
+    });
+  }
+
+  return null;
 };
 
 const Main = ({ className = '', ...props }) => <main {...props} className={`omrs-main-content ${className}`} />;
