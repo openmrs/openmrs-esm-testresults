@@ -1,3 +1,5 @@
+// trendline.scss
+
 .ui-shell-header-modal-bar-default {
     height: 3rem;
     object-fit: contain;
@@ -8,10 +10,28 @@
     display: flex;
 }
 
+.title {
+  height: 1.375rem;
+  font-family: IBMPlexSans;
+  font-size: 1rem;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.38rem;
+  letter-spacing: normal;
+  padding-left: 0.875rem;
+}
+
 .Background {
   width: 100%;
   // height: 20.125rem;
   // margin: 3rem 12rem 1rem;
   padding: 2.375rem 5.688rem 2.188rem 1rem;
   background: white;
+}
+
+.Actions-Navigation-arrow--left-16 {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--open-mrs-background-gray);
 }

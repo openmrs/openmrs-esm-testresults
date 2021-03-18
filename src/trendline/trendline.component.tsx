@@ -4,6 +4,10 @@ import { Link } from 'react-router-dom';
 import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
 import styles from './trendline.scss';
 import { LineChart } from '@carbon/charts-react';
+import { ArrowLeft24 } from '@carbon/icons-react';
+
+import '@carbon/charts/styles.css';
+
 
 const useTrendlineData = () => {
   const { patientUuid, panelUuid, testUuid } = useParams<{
@@ -30,7 +34,12 @@ const useTrendlineData = () => {
 };
 
 const Main = ({ className = '', ...props }) => <main {...props} className={`omrs-main-content ${className}`} />;
+const TrendLineHeader = ({ ...props }) => {
+  return <div {...props} className={styles['ui-shell-header-modal-bar-default']}></div>;
+};
 const TrendLineBackground = ({ ...props }) => <div {...props} className={styles['Background']} />;
+
+
 
 const Trendline = () => {
   const patientData = useTrendlineData();
@@ -81,6 +90,12 @@ const Trendline = () => {
 
     return (
       <Main>
+      <TrendLineHeader>
+        <>
+          <ArrowLeft24 onClick={() => history.push(`/lab-results/`)}></ArrowLeft24>
+          <div className={styles['title']}>{dataset}</div>
+        </>
+      </TrendLineHeader>
         <TrendLineBackground>
           <LineChart class={styles['chartHolder']} data={data} options={options}></LineChart>
         </TrendLineBackground>
