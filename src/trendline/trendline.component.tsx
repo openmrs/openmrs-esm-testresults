@@ -18,7 +18,6 @@ import {
 
 import '@carbon/charts/styles.css';
 
-
 const useTrendlineData = () => {
   const { patientUuid, panelUuid, testUuid } = useParams<{
     patientUuid: string;
@@ -49,12 +48,9 @@ const TrendLineHeader = ({ ...props }) => {
 };
 const TrendLineBackground = ({ ...props }) => <div {...props} className={styles['Background']} />;
 
-
-
 const Trendline = () => {
   const patientData = useTrendlineData();
   const history = useHistory();
-
 
   if (patientData !== null) {
     let leftAxisLabel = '';
@@ -63,15 +59,15 @@ const Trendline = () => {
     const data = [];
     const tableData = [];
 
-    const DateFormatOption: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    const TableDateFormatOption: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const DateFormatOption: Intl.DateTimeFormatOptions = { month: 'short', day: '2-digit' };
+    const TableDateFormatOption: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: '2-digit' };
     const TableTimeFormatOption: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
 
     // console.log(patientData)
     let dataset = patientData[0];
     patientData[1].entries.forEach(entry => {
       data.push({
-        date: new Date(Date.parse(entry.effectiveDateTime)).toLocaleDateString('en-GB', DateFormatOption),
+        date: new Date(Date.parse(entry.effectiveDateTime)).toLocaleDateString('en-US', DateFormatOption),
         value: entry.value,
         group: dataset,
         id: entry.id,
@@ -126,7 +122,6 @@ const Trendline = () => {
         key: 'value',
       },
     ];
-
 
     return (
       <Main>
